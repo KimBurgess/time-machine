@@ -1,0 +1,11 @@
+language: crystal
+crystal:
+  - latest
+  - nightly
+
+env:
+  - SERVICE=api
+  - SERVICE=ingest
+  - SERVICE=push
+
+script: cd services/$SERVICE && crystal deps && crystal spec

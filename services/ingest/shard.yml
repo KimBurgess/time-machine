@@ -1,0 +1,13 @@
+name: ingest
+version: 0.1.0
+
+authors:
+  - Kim Burgess <kim@acaprojects.com>
+
+targets:
+  ingest:
+    main: src/ingest.cr
+
+crystal: 0.23.0
+
+license: MIT

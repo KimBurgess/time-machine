@@ -1,1 +1,5 @@
-data/influx/
+notes.md
+data/
+services/**/.shards/
+services/**/doc/
+services/**/lib/

@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+
+  # Time series db
+  db:
+    image: influxdb:latest
+    command: influxd -config /etc/influxdb/influxdb.conf
+    expose:
+      - "8086"
+    volumes:
+      - ./data/influxdb:/var/lib/influxdb
+      - ./config/influxdb/influxdb.conf:/etc/influxdb/influxdb.conf:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8086/ping"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+
+  # Ingest service for capturing ACAEngine module events
+  ingest:
+    build: ./services/ingest
+    depends_on:
+      - db
+    links:
+      - db
+    env_file: ./config/ingest/.env
