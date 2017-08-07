@@ -24,4 +24,6 @@ services:
       - db
     links:
       - db
+    environment:
+      - DATABASE_URL=http://db:8086
     env_file: ./config/ingest/.env

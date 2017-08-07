@@ -1,3 +1,5 @@
 .crystal/
 .shards/
+doc/
+lib/
 service

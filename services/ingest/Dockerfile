@@ -3,7 +3,7 @@ FROM crystallang/crystal:${CRYSTAL_VERSION}
 
 # Install dependancies
 COPY shard.yml /app/
-#COPY shard.lock /app/
+COPY shard.lock /app/
 WORKDIR /app
 RUN crystal deps
 

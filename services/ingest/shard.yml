@@ -4,6 +4,10 @@ version: 0.1.0
 authors:
   - Kim Burgess <kim@acaprojects.com>
 
+dependencies:
+  influxdb:
+    github: jeromegn/influxdb.cr
+
 targets:
   ingest:
     main: src/ingest.cr
