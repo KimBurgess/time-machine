@@ -1,0 +1,13 @@
+name: app
+version: 1.0.0
+
+dependencies:
+  action-controller:
+    github: spider-gazelle/action-controller
+  active-model:
+    github: spider-gazelle/active-model
+
+# compile target
+targets:
+  app:
+    main: src/app.cr

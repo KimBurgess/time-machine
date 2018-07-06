@@ -1,6 +1,0 @@
-version: 1.0
-shards:
-  influxdb:
-    github: jeromegn/influxdb.cr
-    version: 0.1.1
-
