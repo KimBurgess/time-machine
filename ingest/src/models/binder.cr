@@ -5,9 +5,9 @@ require "json/any"
 
 class Mapping
   getter subkey : Array(String)?
-  getter previous_value : JSON::Any::Type
+  getter previous_value : Bool | Float64 | Int64 | String | Nil
 
-  def initialize(@system : String, @driver : String, @state : String, key : String?, @bookable : Bool, @capacity : Int32, @index : Int32)
+  def initialize(@system : String, @driver : String, @state : String, key : String?, @bookable : Bool?, @capacity : Int32?, @index : Int32)
     @previous_value = nil
     if key && !key.empty?
       @subkey = key.split(".")
@@ -25,10 +25,18 @@ class Mapping
       end
     end
 
-    # Ignore unacceptable values
-    value = value.raw
-    case value
-    when Array(JSON::Any), Hash(String, JSON::Any), Nil
+    # Ignore unacceptable values and re-cast
+    check = value.raw
+    case check
+    when Bool
+      value = value.as_bool
+    when Float64
+      value = value.as_f
+    when Int64
+      value = value.as_i64
+    when String
+      value = value.as_s
+    else
       return
     end
 
@@ -36,23 +44,23 @@ class Mapping
     @previous_value = value
 
     # Create the tags list
-    tags["bookable"] = @bookable
+    tags["bookable"] = !!@bookable
     tags["class"] = @driver
 
     # Create the fields list
-    fields = InfluxDB::Fields{
-      "capacity" => @capacity,
-      "index"    => @index,
-      "system"   => @system,
-      "value"    => value,
-    }
+    fields = InfluxDB::Fields.new
+    capacity = @capacity
+    fields["capacity"] = capacity if capacity
+    fields["index"] = @index
+    fields["system"] = @system
+    fields["value"] = value
 
-    InfluxDB::PointValue @state, fields, tags, timestamp
+    InfluxDB::PointValue.new @state, fields, tags, timestamp
   end
 end
 
 class Binding
-  def initialize(@system : String, @driver : String, @index : Int32, @state : String, @bookable : Bool, @capacity : Int32)
+  def initialize(@system : String, @driver : String, @index : Int32, @state : String, @bookable : Bool?, @capacity : Int32?)
     @mappings = {} of String => Mapping
   end
 

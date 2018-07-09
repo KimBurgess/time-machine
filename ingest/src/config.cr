@@ -1,6 +1,7 @@
 # Application dependencies
 require "action-controller"
 require "active-model"
+require "influxdb"
 
 # Application code
 require "./controllers/application"

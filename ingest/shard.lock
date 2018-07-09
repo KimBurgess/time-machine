@@ -12,9 +12,9 @@ shards:
     github: luckyframework/habitat
     version: 0.2.1
 
-  kilt:
-    github: jeromegn/kilt
-    version: 0.4.0
+  influxdb:
+    github: aca-labs/influxdb.cr
+    version: 0.2.0
 
   radix:
     github: luislavena/radix
