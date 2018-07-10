@@ -65,7 +65,7 @@ class Binding
   end
 
   def store(driver, state, key)
-    lookup = "#{driver}\e#{state}\e#{key}"
+    lookup = (key && !key.empty?) ? "#{driver}.#{state}.#{key}" : "#{driver}.#{state}"
     @mappings[lookup] ||= Mapping.new(@system, driver, state, key, @bookable, @capacity, @index)
   end
 
@@ -91,10 +91,14 @@ class Binding
     }
   end
 
+  def to_s
+    "#{@system}[#{@driver}_#{@index}].#{@state}\n\t#{@mappings.keys.join("\n\t")}"
+  end
+
   # returns an array of updates to be pushed to the database
   # tags here
   def update(tags : InfluxDB::Tags, value : JSON::Any, timestamp : Time)
-    @mappings.values.collect { |mapping|
+    @mappings.values.map { |mapping|
       mapping.update(tags, value, timestamp)
     }.compact
   end
