@@ -130,7 +130,8 @@ class Binder
   end
 
   def [](system)
-    # NOTE:: remember to .dup these tags before calling Binding#update
-    @tags[system]
+    # NOTE:: we .dup these tags for calling Binding#update
+    # as Binding#update will modify the hash
+    @tags[system].dup
   end
 end
