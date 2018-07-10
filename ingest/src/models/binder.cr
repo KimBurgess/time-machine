@@ -125,11 +125,11 @@ class Binder
     @bindings.values
   end
 
-  def set_tags(system, tags)
+  def []=(system, tags)
     @tags[system] = tags
   end
 
-  def get_tags(system)
+  def [](system)
     # NOTE:: remember to .dup these tags before calling Binding#update
     @tags[system]
   end
