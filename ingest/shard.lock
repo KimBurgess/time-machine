@@ -8,6 +8,14 @@ shards:
     github: spider-gazelle/active-model
     version: 1.0.1
 
+  bisect:
+    github: spider-gazelle/bisect
+    version: 1.0.0
+
+  cron_parser:
+    github: kostya/cron_parser
+    version: 0.2.0
+
   habitat:
     github: luckyframework/habitat
     version: 0.2.1
@@ -23,4 +31,8 @@ shards:
   router:
     github: tbrand/router.cr
     version: 0.2.3
+
+  tasker:
+    github: spider-gazelle/tasker
+    version: 1.0.0
 

@@ -5,7 +5,7 @@ require "json/any"
 
 class Mapping
   getter subkey : Array(String)?
-  getter previous_value : Bool | Float64 | Int64 | String | Nil
+  getter previous_value : Bool | Float64 | Int64 | String | Array(String) | Nil
 
   def initialize(@system : String, @driver : String, @state : String, key : String?, @bookable : Bool?, @capacity : Int32?, @index : Int32)
     @previous_value = nil
@@ -14,14 +14,14 @@ class Mapping
     end
   end
 
-  def update(tags : InfluxDB::Tags, value : JSON::Any, timestamp : Time)
+  def update(tags : InfluxDB::Tags, value : JSON::Any, timestamp : Time) : Array(InfluxDB::PointValue)
     # Grab the sub key value as required
     if subkey = @subkey
       begin
         subkey.each { |key| value = value[key] }
       rescue
         # Don't write value if subkey doesn't exist
-        return
+        return [] of InfluxDB::PointValue
       end
     end
 
@@ -36,11 +36,15 @@ class Mapping
       value = value.as_i64
     when String
       value = value.as_s
+    when Array(JSON::Any)
+      # Holy shit crystal lang type system is awesome.
+      value = value.as_a.map(&.to_s)
     else
-      return
+      return [] of InfluxDB::PointValue
     end
 
-    return if @previous_value == value
+    previous = @previous_value
+    return [] of InfluxDB::PointValue if previous == value
     @previous_value = value
 
     # Create the tags list
@@ -53,9 +57,32 @@ class Mapping
     fields["capacity"] = capacity if capacity
     fields["index"] = @index
     fields["system"] = @system
-    fields["value"] = value
 
-    InfluxDB::PointValue.new @state, fields, tags, timestamp
+    # Treat the existance of values in the array as booleans
+    if value.is_a?(Array(String))
+      values = {} of String => Bool
+
+      if previous.is_a?(Array(String))
+        # new entries
+        value.reject { |s| previous.includes?(s) }.each { |s| values[s] = true }
+
+        # removed entries
+        previous.reject { |s| value.includes?(s) }.each { |s| values[s] = false }
+      else
+        # all values are true if there are no previous
+        value.each { |s| values[s] = true }
+      end
+
+      values.map do |value, exists|
+        fields = fields.dup
+        fields["term"] = value
+        fields["value"] = exists
+        InfluxDB::PointValue.new @state, fields, tags, timestamp
+      end
+    else
+      fields["value"] = value
+      [InfluxDB::PointValue.new(@state, fields, tags, timestamp)]
+    end
   end
 end
 
@@ -98,9 +125,11 @@ class Binding
   # returns an array of updates to be pushed to the database
   # tags here
   def update(tags : InfluxDB::Tags, value : JSON::Any, timestamp : Time)
-    @mappings.values.map { |mapping|
-      mapping.update(tags, value, timestamp)
-    }.compact
+    updates = [] of InfluxDB::PointValue
+    @mappings.values.each { |mapping|
+      updates.concat(mapping.update(tags, value, timestamp))
+    }
+    updates
   end
 end
 

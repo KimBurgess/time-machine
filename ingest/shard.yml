@@ -8,6 +8,8 @@ dependencies:
     github: spider-gazelle/active-model
   influxdb:
     github: aca-labs/influxdb.cr
+  tasker:
+    github: spider-gazelle/tasker
 
 # compile target
 targets:
