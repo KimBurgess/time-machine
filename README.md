@@ -1,6 +1,6 @@
-# Time Machine
+# ACA Place
 
-An analytics API for [ACAEngine](https://github.com/acaprojects/ruby-engine) designed to work with modern BI tools. Provides medium to long-term storage of events of interest within ACA enabled environments.
+An analytics API for [ACAEngine](https://docs.acaengine.com) designed to work with modern BI tools. Provides medium to long-term storage of events of interest within ACA enabled environments.
 
 # Setup
 
